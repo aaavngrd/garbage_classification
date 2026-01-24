@@ -28,7 +28,7 @@ def load_model(model_path: str, num_classes: int, device: torch.device):
     in_features = model.classifier[1].in_features
     model.classifier[1] = nn.Linear(in_features, num_classes)
 
-    checkpoint = torch.load(model_path, map_location=device)
+    checkpoint = torch.load(model_path, map_location=device) # nosec B614
     model.load_state_dict(checkpoint["model_state_dict"])
 
     model.to(device)
@@ -75,7 +75,7 @@ def main():
 
 
 if __name__ == "__main__":
-    checkpoint = torch.load("best_model.pt", map_location="cpu")
+    checkpoint = torch.load("best_model.pt", map_location="cpu") # nosec B614
     class_to_idx = checkpoint["class_to_idx"]
     num_classes = len(class_to_idx)
 

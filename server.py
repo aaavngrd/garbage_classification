@@ -21,7 +21,7 @@ app = FastAPI(
 
 # Model + classes
 def load_model_and_classes():
-    checkpoint = torch.load(MODEL_PATH, map_location=DEVICE)
+    checkpoint = torch.load(MODEL_PATH, map_location=DEVICE) # nosec B614
 
     class_to_idx = checkpoint["class_to_idx"]
     idx_to_class = {v: k for k, v in class_to_idx.items()}

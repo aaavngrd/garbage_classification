@@ -95,7 +95,7 @@ def test_tc04_confidence_present_and_numeric(client):
     assert isinstance(data["confidence"], float)
 
 
-# TC-05 | FR-08
+# TC-05 | FR-07
 # Simulate server error -> returns error message
 def test_tc05_simulate_server_error_returns_error(client, server_module, monkeypatch):
     def broken_forward(*args, **kwargs):

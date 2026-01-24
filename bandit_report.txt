@@ -1,0 +1,51 @@
+Run started:2026-01-24 17:36:50.411020+00:00
+
+Test results:
+>> Issue: [B614:pytorch_load] Use of unsafe PyTorch load
+   Severity: Medium   Confidence: High
+   CWE: CWE-502 (https://cwe.mitre.org/data/definitions/502.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.3/plugins/b614_pytorch_load.html
+   Location: .\inference.py:31:17
+30	
+31	    checkpoint = torch.load(model_path, map_location=device)
+32	    model.load_state_dict(checkpoint["model_state_dict"])
+
+--------------------------------------------------
+>> Issue: [B614:pytorch_load] Use of unsafe PyTorch load
+   Severity: Medium   Confidence: High
+   CWE: CWE-502 (https://cwe.mitre.org/data/definitions/502.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.3/plugins/b614_pytorch_load.html
+   Location: .\inference.py:78:17
+77	if __name__ == "__main__":
+78	    checkpoint = torch.load("best_model.pt", map_location="cpu")
+79	    class_to_idx = checkpoint["class_to_idx"]
+
+--------------------------------------------------
+>> Issue: [B614:pytorch_load] Use of unsafe PyTorch load
+   Severity: Medium   Confidence: High
+   CWE: CWE-502 (https://cwe.mitre.org/data/definitions/502.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.3/plugins/b614_pytorch_load.html
+   Location: .\server.py:24:17
+23	def load_model_and_classes():
+24	    checkpoint = torch.load(MODEL_PATH, map_location=DEVICE)
+25	
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 352
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 0
+		Medium: 3
+		High: 0
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 0
+		Medium: 0
+		High: 3
+Files skipped (0):
