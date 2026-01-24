@@ -1,0 +1,13 @@
+# Datasets
+data/
+inference_images/
+raw_dataset/
+
+# PyTorch models
+*.pt
+*.pth
+
+# Python
+__pycache__/
+venv/
+.venv/
