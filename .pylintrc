@@ -1,0 +1,11 @@
+[MASTER]
+ignore=data,raw_dataset,.venv
+
+[MESSAGES CONTROL]
+disable=C0114,R0903
+
+[FORMAT]
+max-line-length=100
+
+[BASIC]
+good-names=i,j,k,p,x,n,lr,bs,e

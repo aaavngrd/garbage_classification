@@ -6,32 +6,33 @@ from typing import Dict
 
 import numpy as np
 import torch
-import torch.nn as nn
-import torch.optim as optim
+from torch import nn
+from torch import optim
 from torch.utils.data import DataLoader
 from torchvision import datasets, models, transforms
 
 
-# Utils
 def set_seed(seed: int = 42) -> None:
+    """Set random seeds for full reproducibility across runs."""
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
-
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
 
 def accuracy_from_logits(logits: torch.Tensor, targets: torch.Tensor) -> float:
+    """Compute classification accuracy from raw logits and target labels."""
     preds = torch.argmax(logits, dim=1)
     correct = (preds == targets).sum().item()
     return correct / targets.size(0)
 
 
-# Config
 @dataclass
 class TrainConfig:
+    """Training hyperparameters and path configuration."""
+
     data_dir: str
     epochs: int
     batch_size: int
@@ -43,8 +44,8 @@ class TrainConfig:
     output_path: str
 
 
-# Data
 def build_transforms(img_size: int) -> Dict[str, transforms.Compose]:
+    """Build train/val/test image transformation pipelines."""
     imagenet_mean = [0.485, 0.456, 0.406]
     imagenet_std = [0.229, 0.224, 0.225]
 
@@ -71,6 +72,7 @@ def build_transforms(img_size: int) -> Dict[str, transforms.Compose]:
 
 
 def build_dataloaders(cfg: TrainConfig):
+    """Create DataLoader instances for train, val, and test splits."""
     data_root = Path(cfg.data_dir)
     transforms_map = build_transforms(cfg.img_size)
 
@@ -98,27 +100,25 @@ def build_dataloaders(cfg: TrainConfig):
     return loaders, len(class_to_idx), class_to_idx
 
 
-# Model
 def build_model(num_classes: int, freeze_backbone: bool) -> nn.Module:
-    model = models.mobilenet_v2(
+    """Build MobileNetV2 model with a custom classifier head."""
+    net = models.mobilenet_v2(
         weights=models.MobileNet_V2_Weights.IMAGENET1K_V1
     )
 
     if freeze_backbone:
-        for p in model.features.parameters():
+        for p in net.features.parameters():
             p.requires_grad = False
 
-    in_features = model.classifier[1].in_features
-    model.classifier[1] = nn.Linear(in_features, num_classes)
+    in_features = net.classifier[1].in_features
+    net.classifier[1] = nn.Linear(in_features, num_classes)
+    return net
 
-    return model
 
-
-# Train / Eval
 def train_one_epoch(model, loader, optimizer, device):
+    """Run one training epoch and return average (loss, accuracy)."""
     model.train()
     criterion = nn.CrossEntropyLoss()
-
     running_loss = 0.0
     running_acc = 0.0
     total = 0
@@ -143,9 +143,9 @@ def train_one_epoch(model, loader, optimizer, device):
 
 @torch.no_grad()
 def evaluate(model, loader, device):
+    """Evaluate model on a data loader and return average (loss, accuracy)."""
     model.eval()
     criterion = nn.CrossEntropyLoss()
-
     running_loss = 0.0
     running_acc = 0.0
     total = 0
@@ -165,8 +165,8 @@ def evaluate(model, loader, device):
     return running_loss / total, running_acc / total
 
 
-# Main
 def main():
+    """Parse arguments, train the model, and evaluate on the test set."""
     parser = argparse.ArgumentParser(
         description="Garbage classification with MobileNetV2 (PyTorch)"
     )
@@ -195,7 +195,6 @@ def main():
     )
 
     set_seed(cfg.seed)
-
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
 
@@ -233,11 +232,9 @@ def main():
                 },
                 cfg.output_path,
             )
-            print(f"✅ Saved best model to {cfg.output_path}")
+            print(f"Saved best model to {cfg.output_path}")
 
-    test_loss, test_acc = evaluate(
-        model, loaders["test"], device
-    )
+    _, test_acc = evaluate(model, loaders["test"], device)
     print(f"Test accuracy: {test_acc:.4f}")
 
 

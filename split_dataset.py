@@ -12,11 +12,14 @@ SPLIT = {
 }
 
 SEED = 42
+
 random.seed(SEED)
 
 CLASSES = ["plastic", "paper", "glass", "metal", "organic"]
 
+
 def main():
+    """Split raw dataset images into train/val/test subdirectories."""
     for split in SPLIT:
         for cls in CLASSES:
             Path(TARGET_DIR, split, cls).mkdir(parents=True, exist_ok=True)
@@ -40,6 +43,7 @@ def main():
                 shutil.copy2(img, Path(TARGET_DIR, split, cls, img.name))
 
     print("Dataset successfully split")
+
 
 if __name__ == "__main__":
     main()
